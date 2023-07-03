@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import retangulo from '../Rectangle 26.png';
 import { Link, useNavigate } from "react-router-dom";
 import logo from '../Group 3.png';
 import boasVindas from '../Olá, boas vindas ao LabEddit ;).png';
+import axios from "axios";
 
 const Retangulo = styled.nav`
   display: flex;
@@ -65,7 +66,6 @@ const InputContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
 `;
 
 const Input = styled.input`
@@ -94,7 +94,6 @@ const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
- 
 `;
 
 const ButtonSignup = styled.button`
@@ -112,85 +111,110 @@ const ButtonSignup = styled.button`
   font-family: Arial, Helvetica, sans-serif;
   font-size: 16px;
   font-style: normal;
-font-weight: 700;
-font-size: 18px;
-line-height: 25px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 25px;
   border: none;
   cursor: pointer;
-`
-
+`;
 
 export const SignupPage = () => {
-    const [nickname, setNickname] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [agreed, setAgreed] = useState(false);
-    const navigate = useNavigate()
+  const [nickname, setNickname] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [agreed, setAgreed] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
+  const navigate = useNavigate();
 
-    const nicknameChange = (e) => {
-        setNickname(e.target.value);
-    };
+  const nicknameChange = (e) => {
+    setNickname(e.target.value);
+  };
 
-    const emailChange = (e) => {
-        setEmail(e.target.value);
-    };
+  const emailChange = (e) => {
+    setEmail(e.target.value);
+  };
 
-    const passwordChange = (e) => {
-        setPassword(e.target.value);
-    };
+  const passwordChange = (e) => {
+    setPassword(e.target.value);
+  };
 
-    const handleAgreementChange = (e) => {
-        setAgreed(e.target.checked);
-    };
-    const handleLogin = () => {
-        navigate("/")
+  const handleAgreementChange = (e) => {
+    setAgreed(e.target.checked);
+  };
+
+  const handleSignup = async () => {
+    try {
+      const response = await axios.post('https://labedditbackend-3noj.onrender.com/users/signup', {
+        nickname: nickname,
+        email: email,
+        password: password
+      });
+      console.log('Usuário criado com sucesso!');
+      console.log('Token:', response.data.token);
+      setSignupSuccess(true);
+    } catch (error) {
+      console.log('Erro ao criar o usuário:', error.message);
     }
-    return (
-        <>
-            <Retangulo src={retangulo} alt='barra com a logo da labenu' />
-            <LogoContainer>
-                <Logo src={logo} alt='logo da labenu' />
-            </LogoContainer>
-            <LoginButton to="/">Entrar</LoginButton>
+  };
 
-            <BoasVindasContainer>
-                <BoasVindas src={boasVindas} alt='Texto de boas vindas ao LabEddit' />
-            </BoasVindasContainer>
+  useEffect(() => {
+    if (signupSuccess) {
+      navigate("/");
+    }
+  }, [signupSuccess, navigate]);
 
-            <InputContainer>
-                <Input
-                    type="nickname"
-                    placeholder="Apelido"
-                    value={nickname}
-                    onChange={nicknameChange}
-                />
-                <Input
-                    type="email"
-                    placeholder="E-mail"
-                    value={email}
-                    onChange={emailChange}
-                />
-                <Input
-                    type="password"
-                    placeholder="Senha"
-                    value={password}
-                    onChange={passwordChange}
-                />
-                <p>Ao continuar, você concorda com o nosso Contrato de usuário e nossa Política de Privacidade</p>
-                <CheckboxLabel>
-                    <CheckboxInput
-                        type="checkbox"
-                        checked={agreed}
-                        onChange={handleAgreementChange}
-                    />
-                    Eu concordo em receber emails sobre coisas legais no Labeddit
-                </CheckboxLabel>
-            </InputContainer>
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    handleSignup();
+  };
 
-            <ButtonContainer>
-                <ButtonSignup onClick={handleLogin}> Cadastrar  </ButtonSignup>
-            </ButtonContainer>
+  return (
+    <>
+      <Retangulo src={retangulo} alt='barra com a logo da labenu' />
+      <LogoContainer>
+        <Logo src={logo} alt='logo da labenu' />
+      </LogoContainer>
+      <LoginButton to="/">Entrar</LoginButton>
 
-        </>
-    );
+      <BoasVindasContainer>
+        <BoasVindas src={boasVindas} alt='Texto de boas vindas ao LabEddit' />
+      </BoasVindasContainer>
+
+      <form onSubmit={handleFormSubmit}>
+        <InputContainer>
+          <Input
+            type="nickname"
+            placeholder="Apelido"
+            value={nickname}
+            onChange={nicknameChange}
+          />
+          <Input
+            type="email"
+            placeholder="E-mail"
+            value={email}
+            onChange={emailChange}
+          />
+          <Input
+            type="password"
+            placeholder="Senha"
+            value={password}
+            onChange={passwordChange}
+          />
+          <p>Ao continuar, você concorda com o nosso Contrato de usuário e nossa Política de Privacidade</p>
+          <CheckboxLabel>
+            <CheckboxInput
+              type="checkbox"
+              checked={agreed}
+              onChange={handleAgreementChange}
+            />
+            Eu concordo em receber emails sobre coisas legais no Labeddit
+          </CheckboxLabel>
+        </InputContainer>
+
+        <ButtonContainer>
+          <ButtonSignup type="submit">Cadastrar</ButtonSignup>
+        </ButtonContainer>
+      </form>
+    </>
+  );
 };

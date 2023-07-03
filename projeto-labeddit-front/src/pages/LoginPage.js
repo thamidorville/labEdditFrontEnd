@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import logo from '../logo.png'
-import subtitulo from '../subtitulo.png'
+import React, { useState } from 'react';
+import logo from '../logo.png';
+import subtitulo from '../subtitulo.png';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
 
 const LogoContainer = styled.div`
   display: flex;
@@ -48,17 +48,15 @@ const ButtonPrimary = styled.button`
   font-family: Arial, Helvetica, sans-serif;
   font-size: 16px;
   font-style: normal;
-font-weight: 700;
-font-size: 18px;
-line-height: 25px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 25px;
   border: none;
   cursor: pointer;
-
-
 `;
 
 const ButtonSecondary = styled(ButtonPrimary)`
- display: flex;
+  display: flex;
   justify-content: center;
   align-items: center;
   width: 365px;
@@ -89,61 +87,72 @@ const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
- 
 `;
 
 export const LoginPage = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const navigate = useNavigate()
 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const navigate = useNavigate()
+  const emailChange = (e) => {
+    setEmail(e.target.value)
+  }
 
-    const emailChange = (e) => {
-        setEmail(e.target.value)
+  const passwordChange = (e) => {
+    setPassword(e.target.value)
+  }
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post(
+        'https://labedditbackend-3noj.onrender.com/users/login',
+        {
+          email: email,
+          password: password
+        }
+      )
+
+      console.log('Login feito!')
+      console.log('Token', response.data.token)
+      navigate('/post');
+    } catch (error) {
+      console.log('Erro ao fazer o login:', error.message)
     }
+  }
 
-    const passwordChange = (e) => {
-        setPassword(e.target.value)
-    }
+  const handleCreateAccount = () => {
+    navigate('/signup')
+  }
 
-    const handleCreateAccount = () => {
-      navigate("/signup")
-    }
-
-    const handleContinue = () => {
-      navigate("/post")
-    }
-    return (
-        <div>
-            <LogoContainer>
-                <img src={logo} alt='logo Labenu' />
-                <img src={subtitulo} alt='logo Labenu' />
-            </LogoContainer>
-            <InputContainer>
-            <Input
-                type='email'
-                placeholder='E-mail'
-                value={email}
-                onChange={emailChange}
-            />
-            <Input
-                type='password'
-                placeholder='senha'
-                value={password}
-                onChange={passwordChange}
-            />
-            <ButtonPrimary onClick={handleContinue}>Continue</ButtonPrimary>
-            </InputContainer>
-            <Line/>
-            <ButtonContainer> 
-               <ButtonSecondary onClick={handleCreateAccount}>Crie uma conta!
-               </ButtonSecondary>
-                </ButtonContainer>
-           
-
-
-        </div>
-    )
+  return (
+    <div>
+      <LogoContainer>
+        <img src={logo} alt="logo Labenu" />
+        <img src={subtitulo} alt="logo Labenu" />
+      </LogoContainer>
+      <InputContainer>
+        <Input
+          type="email"
+          placeholder="E-mail"
+          value={email}
+          onChange={emailChange}
+        />
+        <Input
+          type="password"
+          placeholder="senha"
+          value={password}
+          onChange={passwordChange}
+        />
+        <ButtonPrimary onClick={handleLogin}>Continue</ButtonPrimary>
+      </InputContainer>
+      <Line />
+      <ButtonContainer>
+        <ButtonSecondary onClick={handleCreateAccount}>
+          Crie uma conta!
+        </ButtonSecondary>
+      </ButtonContainer>
+    </div>
+  )
 }
 
 

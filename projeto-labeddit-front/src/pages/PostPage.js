@@ -153,7 +153,7 @@ export const PostPage = () => {
         });
         setPostList(response.data);
       } catch (error) {
-        console.log('Erro ao buscar postagens:', error.message);
+        console.log('Erro ao buscar suas postagens', error.message);
       }
     };
 

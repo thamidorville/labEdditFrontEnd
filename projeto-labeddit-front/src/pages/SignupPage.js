@@ -153,7 +153,7 @@ export const SignupPage = () => {
       console.log('Token:', response.data.token);
       setSignupSuccess(true);
     } catch (error) {
-      console.log('Erro ao criar o usuário:', error.message);
+      console.log('Erro ao criar usuário:', error.message);
     }
   };
 
